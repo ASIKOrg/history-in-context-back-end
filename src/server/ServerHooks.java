@@ -50,24 +50,43 @@ public class ServerHooks
         mimeTypes.put("html", "text/html");
         mimeTypes.put("htm", "text/html");
         mimeTypes.put("json", "application/json");
+        mimeTypes.put("css", "text/css");
+        mimeTypes.put("png", "image/png");        
     }
 
     /**
      * Simply serves the site page
      */
     public Response servePage(String uri)
-    {
+    {        
         Response response = new Response("");
+        String mimeType = DEFAULT_MIME_TYPE;
+        System.out.println("URI: " + uri);
+        if(uri.toLowerCase().contains("css"))
+        {
+            System.out.println("CSS");
+            mimeType = mimeTypes.get("css");
+        }
+        else if(uri.toLowerCase().contains("js"))
+        {
+            System.out.println("JS");
+            mimeType = mimeTypes.get("js");
+        }
+        else if(uri.toLowerCase().contains("png"))
+        {
+            System.out.println("PNG");
+            mimeType = mimeTypes.get("png");
+        }            
         try
         {
             // enable XSS
             response.addHeader(XSS_KEY, XSS_VALUE);
-            response.setData(new FileInputStream(WebServer.PAGE_TO_SERVE));
-            response.setMimeType(mimeTypes.getOrDefault("html", DEFAULT_MIME_TYPE));
+            response.setData(new FileInputStream(WebServer.ROOT_DIR + "/" + uri));
+            response.setMimeType(mimeType);
         }
         catch (FileNotFoundException e)
         {
-            System.err.println(WebServer.PAGE_TO_SERVE + " is not found");
+            System.err.println("Page is not found");
             return new Response(Response.Status.INTERNAL_ERROR, DEFAULT_MIME_TYPE, "Failed to load page.");
         }
         return response;
@@ -78,7 +97,9 @@ public class ServerHooks
      */
     public Response callAPI(String uri, Map<String, String> params)
 	{
+        System.out.println("API CLLLLLLLLLLLLLLLLL");        
         String inputVal = params.get(INPUT_KEY);
+        System.out.println("INPUT VALLLL " + inputVal);
         String apiResponse = dispatcher.executeAPI(uri, inputVal);
 	    Response response = new Response(Response.Status.ACCEPTED, mimeTypes.getOrDefault("json", DEFAULT_MIME_TYPE), apiResponse);
         //enable XSS

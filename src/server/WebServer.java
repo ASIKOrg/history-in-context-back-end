@@ -59,7 +59,7 @@ public class WebServer extends NanoHTTPD
     private final String DEBUG = "/DEBUG";
 
     // serve pages
-    public static final String PAGE_TO_SERVE = ROOT_DIR + "/test.html";
+    
 
     private ServerHooks sh = ServerHooks.getInstance();
 

@@ -15,7 +15,7 @@ public class WikipediaRequest
      */
     public WikipediaRequest(String pageName)
     {
-        this.pageName = pageName;
+        this.pageName = pageName.toLowerCase();
         this.url = generateURL(pageName);
     }
     

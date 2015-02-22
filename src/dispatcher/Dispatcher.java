@@ -1,5 +1,7 @@
 package dispatcher;
 
+import parser.Parser;
+import parser.ParserNew;
 import dates.Date;
 import dates.DateJSON;
 import utils.StringEncoder;
@@ -44,9 +46,9 @@ public class Dispatcher
             //execute HTTP request
             String pageHTML = WikipediaHTTPRequest.sendGet(wikiReq);
             
-            //TODO PARSE wikipedia
             
-            Date wikiDates = new Date("10", "20");
+            
+            Date wikiDates = Parser.process(pageHTML);//new Date("10", "20");
             DateJSON dateJSON = new DateJSON(wikiDates);
             return dateJSON.toString();
         }

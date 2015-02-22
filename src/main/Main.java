@@ -1,7 +1,10 @@
 package main;
 
+import parser.Cleaner;
 import server.WebServer;
 import server.nanohttpd.ServerRunner;
+import wikipedia.WikipediaHTTPRequest;
+import wikipedia.WikipediaRequest;
 
 
 public class Main
@@ -13,7 +16,7 @@ public class Main
 	public static final boolean DEBUG = true;
 	
     public static void main(String[] args)
-    {             
+    {        
         System.out.println("Starting...");
         // start up the web server
         ServerRunner.run(WebServer.class);        
