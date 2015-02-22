@@ -34,62 +34,74 @@ import static server.nanohttpd.NanoHTTPD.MIME_PLAINTEXT;
 /**
  *
  */
-public class WebServer extends NanoHTTPD {
+public class WebServer extends NanoHTTPD
+{
 
-	private static final int PORT = 8080;
+    private static final int PORT = 8080;
 
-	private final String ROOT_DIR = "./webRootFolder";
+    public static final String ROOT_DIR = "./webRootFolder";
 
-	private final String API_SUBDIR = "/api";
+    public static final String API_SUBDIR = "/api";
 
-	private Map<String, String> mimeTypes = new LinkedHashMap<String, String>();
+    private Map<String, String> mimeTypes = new LinkedHashMap<String, String>();
 
-	private final String[] MAIN
-		= {
-			"/", ""
-		};
-	private final String ENQUEUE = "/ENQUEUE";
-	private final String STATUS = "/STATUS";
-	private final String CLEAR_QUEUE = "/CLEAR-QUEUE";
-	private final String GET_VAR = "/GET-VARIABLE";
-	private final String SET_VAR = "/SET-VARIABLE";
-	private final String INVENTORY = "/INVENTORY";
-	private final String DEBUG = "/DEBUG";
+    private final String[] MAIN =
+    {
+            "/",
+            ""
+    };
+    private final String ENQUEUE = "/ENQUEUE";
+    private final String STATUS = "/STATUS";
+    private final String CLEAR_QUEUE = "/CLEAR-QUEUE";
+    private final String GET_VAR = "/GET-VARIABLE";
+    private final String SET_VAR = "/SET-VARIABLE";
+    private final String INVENTORY = "/INVENTORY";
+    private final String DEBUG = "/DEBUG";
 
-	private final String XSS_KEY = "Access-Control-Allow-Origin";
-	private final String XSS_VALUE = "*";
+    // serve pages
+    public static final String PAGE_TO_SERVE = ROOT_DIR + "/test.html";
 
-	//serve pages
-	private final String PAGE_TO_SERVE = ROOT_DIR + "/test.html";
+    private ServerHooks sh = ServerHooks.getInstance();
 
-	private ServerHooks sh = null;
+    private String mimeType = MIME_PLAINTEXT;
 
-	private String mimeType = MIME_PLAINTEXT;
+    public WebServer()
+    {
+        super(PORT);
+    }
 
-	public WebServer() {
-		super(PORT);
-		sh = ServerHooks.getInstance();
-		mimeTypes.put("js", "application/javascript");
-		mimeTypes.put("html", MIME_HTML);
-		mimeTypes.put("htm", MIME_HTML);
-		mimeTypes.put("json", "application/json");
-	}
+    @Override
+    public NanoHTTPD.Response serve(NanoHTTPD.IHTTPSession session)
+    {
 
-	@Override
-	public NanoHTTPD.Response serve(NanoHTTPD.IHTTPSession session) {
-		Response response = new Response("");
-		response.addHeader(XSS_KEY, XSS_VALUE);		
-		try
+        // exposed values
+        NanoHTTPD.Method method = session.getMethod();
+
+        String uri = session.getUri().trim();
+
+        // === PARSE URI===
+        if (main.Main.DEBUG)
+            System.out.println("Unparsed: " + method + " '" + uri + "' ");
+        if (uri.endsWith("/"))// remove the last slash on a uri
+            uri = uri.substring(0, uri.length() - 1);
+        if (main.Main.DEBUG)
+            System.out.println("Parsed:   " + method + " '" + uri + "' ");
+        // ===END PARSE URI===
+
+        // response object to return
+        Response response = new Response("");
+
+        // check for API call
+        if (uri.startsWith(API_SUBDIR))
         {
-            response.setData(new FileInputStream(PAGE_TO_SERVE));
+            response = sh.callAPI(uri);
         }
-        catch (FileNotFoundException e)
+        else
         {
-            e.printStackTrace();
+            response = sh.servePage(uri);
         }
-		NanoHTTPD.Method method = session.getMethod();
-		return response;
-	}
+        return response;
+    }
 
 }
 //else if (uri.startsWith(FAVICON))
