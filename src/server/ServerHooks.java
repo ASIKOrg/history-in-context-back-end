@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import dispatcher.Dispatcher;
 import server.nanohttpd.NanoHTTPD.Response;
 
 /**
@@ -16,9 +17,8 @@ public class ServerHooks
 
     // Objects
     private static ServerHooks s = null;
-
-    // used in get/set vars calls
-    private static Map<String, String> vars = Collections.synchronizedMap(new LinkedHashMap<String, String>());
+    
+    private Dispatcher dispatcher = Dispatcher.getInstance();
 
     // used to hold mimetypes
     private Map<String, String> mimeTypes = new LinkedHashMap<String, String>();
@@ -29,6 +29,8 @@ public class ServerHooks
     // XSS vals
     private final String XSS_KEY = "Access-Control-Allow-Origin";
     private final String XSS_VALUE = "*";
+    
+    private final String INPUT_KEY = "search";
 
     /**
      * Singleton instance of ServerHooks
@@ -43,7 +45,7 @@ public class ServerHooks
     }
 
     private ServerHooks()
-    {
+    {        
         mimeTypes.put("js", "application/javascript");
         mimeTypes.put("html", "text/html");
         mimeTypes.put("htm", "text/html");
@@ -74,9 +76,11 @@ public class ServerHooks
     /**
      * Calls the API
      */
-    public Response callAPI(String uri)
+    public Response callAPI(String uri, Map<String, String> params)
 	{
-	    Response response = new Response(Response.Status.ACCEPTED, mimeTypes.getOrDefault("html", DEFAULT_MIME_TYPE),"API CALLED!");
+        String inputVal = params.get(INPUT_KEY);
+        String apiResponse = dispatcher.executeAPI(uri, inputVal);
+	    Response response = new Response(Response.Status.ACCEPTED, mimeTypes.getOrDefault("html", DEFAULT_MIME_TYPE), apiResponse);
         //enable XSS
         response.addHeader(XSS_KEY, XSS_VALUE);	    
 	    return response;

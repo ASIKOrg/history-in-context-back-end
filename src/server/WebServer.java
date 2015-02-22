@@ -76,7 +76,7 @@ public class WebServer extends NanoHTTPD
 
         // exposed values
         NanoHTTPD.Method method = session.getMethod();
-
+        Map<String,String> params = session.getParms();       
         String uri = session.getUri().trim();
 
         // === PARSE URI===
@@ -94,7 +94,9 @@ public class WebServer extends NanoHTTPD
         // check for API call
         if (uri.startsWith(API_SUBDIR))
         {
-            response = sh.callAPI(uri);
+            //remove the API prefix
+            uri = uri.replaceFirst(API_SUBDIR, "");
+            response = sh.callAPI(uri, params);
         }
         else
         {

@@ -1,1 +1,6 @@
-/server/
+/main/
+/wikipedia/
+/dispatcher/
+/httpout.class
+/httpout/
+/utils/
