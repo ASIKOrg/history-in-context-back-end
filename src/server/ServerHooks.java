@@ -80,7 +80,7 @@ public class ServerHooks
 	{
         String inputVal = params.get(INPUT_KEY);
         String apiResponse = dispatcher.executeAPI(uri, inputVal);
-	    Response response = new Response(Response.Status.ACCEPTED, mimeTypes.getOrDefault("html", DEFAULT_MIME_TYPE), apiResponse);
+	    Response response = new Response(Response.Status.ACCEPTED, mimeTypes.getOrDefault("json", DEFAULT_MIME_TYPE), apiResponse);
         //enable XSS
         response.addHeader(XSS_KEY, XSS_VALUE);	    
 	    return response;

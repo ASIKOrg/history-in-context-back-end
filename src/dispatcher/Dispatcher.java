@@ -1,5 +1,7 @@
 package dispatcher;
 
+import dates.Date;
+import dates.DateJSON;
 import utils.StringEncoder;
 import wikipedia.WikipediaHTTPRequest;
 import wikipedia.WikipediaRequest;
@@ -42,12 +44,16 @@ public class Dispatcher
             //execute HTTP request
             String pageHTML = WikipediaHTTPRequest.sendGet(wikiReq);
             
+            //TODO PARSE wikipedia
+            
+            Date wikiDates = new Date("10", "20");
+            DateJSON dateJSON = new DateJSON(wikiDates);
+            return dateJSON.toString();
         }
         else
         {
             System.err.println("Input Value null");
-            return "ERROR: Input value not found!";
+            return new DateJSON(null).toString();
         }
-        return "API!!!";
     }
 }
